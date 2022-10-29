@@ -117,7 +117,7 @@ jobs:
           mkdir artifacts
           mv macOS-latest artifacts/
           mv windows-latest artifacts/
-          ls -la artifacts/
+          ls -laR artifacts/
 
       # Create a new release
       # Use the RELEASE.md text for the body text.
