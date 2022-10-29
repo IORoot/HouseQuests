@@ -22,6 +22,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      # Checkout the PRIVATE Repository
+      # used for the Release BODY
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          repository: ioroot/HouseQuests-Private
+          token: ${{ secrets.PAT }}
+
       # Download the latest release from the
       # private repository.
       #
