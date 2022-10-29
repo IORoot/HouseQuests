@@ -1,6 +1,6 @@
-# Downloads for APS
+# Downloads for HouseQuests
 
-These are the official releases of the APS software.
+These are the official releases of the HouseQuests software.
 
 ## Status
 
