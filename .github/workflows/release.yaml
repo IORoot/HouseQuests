@@ -11,6 +11,12 @@ on:
 
 jobs:
 
+
+  # ┌─────────────────────────────────────┐
+  # │                                     │
+  # │        BUILD THE APPLICATION        │
+  # │                                     │
+  # └─────────────────────────────────────┘
   build:
     name: Build Applications
 
@@ -22,43 +28,55 @@ jobs:
 
     steps:
 
+      # Checkout private code from private repo
+      #
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          repository: ioroot/APS
+          repository: ioroot/HouseQuests-Private
           token: ${{ secrets.PAT }}
 
-
+      # Install Node v18
+      #
       - name: Use Node.js 18.x
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
-
+      # Install package.json
+      #
       - name: npm install
         run: |
           npm install
 
-
+      # Build the app
+      #
       - name: Publish
         run: |
           npm run build
 
-
+      # Housekeeping - Mac
+      # Remove everything except any executables
+      # Rename the 'dist' folder to 'artifacts'
+      #
       - name: Cleanup artifacts
         if: matrix.os != 'windows-latest'
         run: |
           npx rimraf "dist/!(*.exe|*.deb|*.AppImage|*.dmg)"
           mv dist artifacts
 
-
+      # Housekeeping - Windows
+      # Move the .exe file into the artifacts folder
+      #
       - name: Cleanup artifacts Win
         if: matrix.os == 'windows-latest'
         run: |
           mkdir artifacts
           mv dist/*.exe artifacts
 
-
+      # Upload the artifacts folder
+      # Ready for the 'release' job
+      #
       - name: Upload artifacts
         uses: actions/upload-artifact@v1
         with:
@@ -66,7 +84,11 @@ jobs:
           path: artifacts
 
 
-
+  # ┌─────────────────────────────────────┐
+  # │                                     │
+  # │          CREATE A RELEASE           │
+  # │                                     │
+  # └─────────────────────────────────────┘
   release:
 
     name: Build Release
@@ -74,24 +96,32 @@ jobs:
     needs: build
     steps:
 
+      # Checkout the PRIVATE Repository
+      #
       - name: Checkout code
         uses: actions/checkout@v3
         with:
-          repository: ioroot/APS
+          repository: ioroot/HouseQuests-Private
           token: ${{ secrets.PAT }}
 
-
+      # Download the artifact from the previous jobs
+      #
       - uses: actions/download-artifact@master
         id: download
 
-
+      # Create an artifacts folder
+      # move application files into it.
+      #
       - name: Artifacts
         run: |
           mkdir artifacts
           mv macOS-latest artifacts/
           mv windows-latest artifacts/
+          ls -la artifacts/
 
-
+      # Create a new release
+      # Use the RELEASE.md text for the body text.
+      #
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -117,7 +147,9 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 
-      - name: Upload artifact and release v2
+      # Add the artifacts files to the release
+      #
+      - name: Upload artifact on release v2
         uses: fnkr/github-action-ghr@v1
         if: startsWith(github.ref, 'refs/tags/')
         env:
