@@ -3,8 +3,8 @@ name: Create Release
 on:
   push:
     # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+    # tags:
+    #   - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
   workflow_dispatch:
 
@@ -135,23 +135,13 @@ jobs:
           prerelease: false
 
 
-      # - name: Upload artifact and release
-      #   uses: nanoufo/action-upload-artifacts-and-release-assets@main
-      #   with:
-      #     path: |
-      #       artifacts/*
-      #     upload-release-files: true
-      #     if-no-files-found: error
-      #     release-upload-url: ${{ steps.create_release.outputs.upload_url }} 
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-
-      # Add the artifacts files to the release
-      #
-      - name: Create GitHub release
-        uses: Roang-zero1/github-upload-release-artifacts-action@v2
+      - name: Upload artifact and release
+        uses: nanoufo/action-upload-artifacts-and-release-assets@main
         with:
-          args: artifacts/
+          path: |
+            artifacts/*
+          upload-release-files: true
+          if-no-files-found: error
+          release-upload-url: ${{ steps.create_release.outputs.upload_url }} 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
