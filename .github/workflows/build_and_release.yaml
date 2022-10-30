@@ -1,10 +1,9 @@
 name: Create Release
 
 on:
-  # push:
-    # Sequence of patterns matched against refs/tags
-    # tags:
-    #   - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
 
   workflow_dispatch:
 
@@ -97,7 +96,7 @@ jobs:
     steps:
 
       # Checkout the PRIVATE Repository
-      #
+      # used for the Release BODY
       - name: Checkout code
         uses: actions/checkout@v3
         with:
