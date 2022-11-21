@@ -1,4 +1,4 @@
-name: Create Release
+name: Build and make Release
 
 on:
   push:
