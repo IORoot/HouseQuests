@@ -19,7 +19,7 @@ When adding an issue, please try to add an appropriate label to categorise it.
 
 ## Wiki
 
-The main wiki and documentation is on the website at (HouseQuests.com/docs/intro)[HouseQuests.com/docs/intro]. You can find decriptions and help for most features of the application there.
+The main wiki and documentation is on the website at [HouseQuests.com/docs/intro](HouseQuests.com/docs/intro). You can find decriptions and help for most features of the application there.
 
 ## Free first
 
