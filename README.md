@@ -7,8 +7,6 @@ This is the official public repository for the HouseQuests Application.
 
 You can browse and download prior releases of the application as well as submit issues or enhancement suggestions.
 
-
-
 ## Reality of the project
 
 Housequests is a small little side-project that I wanted to make available to the public for a small fee. As much as I'd want to support and bug-fix this application, Its not feasible for me to be able to commit to that. So this github repo is for people to communicate through the issues page and help each other solve any problems. I'll comment when I can. 
