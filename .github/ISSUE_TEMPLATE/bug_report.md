@@ -7,6 +7,9 @@ assignees: ''
 
 ---
 
+**IMPORTANT**
+Be kind and nice. No one is under any obligation to help you. Lets just all be polite and things will be all the better.
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
