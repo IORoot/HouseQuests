@@ -1,4 +1,4 @@
-name: Build and make Release
+name: Build Release
 
 on:
   push:
@@ -51,6 +51,8 @@ jobs:
       # Build the app
       #
       - name: Publish
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
         run: |
           npm run build
 
