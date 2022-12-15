@@ -24,6 +24,9 @@ jobs:
     strategy:
       matrix:
         os: [macOS-latest, windows-latest]
+        
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: false
 
     steps:
 
