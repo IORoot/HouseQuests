@@ -119,7 +119,7 @@ jobs:
       - name: Artifacts
         run: |
           mkdir artifacts
-          mv macOS-latest/* artifacts/
+          mv macOS-*/* artifacts/
           mv windows-latest/* artifacts/
           ls -laR artifacts/
 
