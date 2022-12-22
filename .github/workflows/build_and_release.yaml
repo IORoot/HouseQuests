@@ -23,7 +23,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [macos-10.5, windows-latest]
+        os: [macOS-latest, windows-latest]
         
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: false
