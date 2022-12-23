@@ -113,21 +113,27 @@ jobs:
       - uses: actions/download-artifact@master
         id: download
 
-      # DEBUG with NGROK.
-      - name: Start SSH session
-        uses: luchihoratiu/debug-via-ssh@main
-        with:
-          NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-          SSH_PASS: ${{ secrets.NGROK_SSH_PASS }}
-          NGROK_REGION: eu
+      # # DEBUG with NGROK.
+      # - name: Start SSH session
+      #   uses: luchihoratiu/debug-via-ssh@main
+      #   with:
+      #     NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
+      #     SSH_PASS: ${{ secrets.NGROK_SSH_PASS }}
+      #     NGROK_REGION: eu
 
       # Create an artifacts folder
       # move application files into it.
       #
       - name: Artifacts
         run: |
+          sudo apt install rename
           mkdir artifacts
-          mv macOS-10.5/* artifacts/
+
+          cd macOS-10.15
+          rename 's/(.*)$/macos10.$1/' *.dmg
+          cd ..
+          mv macos-10.15/* artifacts/
+
           mv windows-latest/* artifacts/
           ls -laR artifacts/
 
