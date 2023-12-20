@@ -26,34 +26,53 @@ jobs:
             CSC_IDENTITY_AUTO_DISCOVERY: false
 
         steps:
-            # Checkout private code from private repo
-            #
-            - name: Checkout code
-              uses: actions/checkout@v3
-              with:
-                  repository: ioroot/HouseQuests-Private
-                  token: ${{ secrets.PAT }}
+            # # Checkout private code from private repo
+            # #
+            # - name: Checkout code
+            #   uses: actions/checkout@v3
+            #   with:
+            #       repository: ioroot/HouseQuests-Private
+            #       token: ${{ secrets.PAT }}
 
-            # Install Node v18
-            #
-            - name: Use Node.js 18.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 18.x
+            # # Install Node v18
+            # #
+            # - name: Use Node.js 18.x
+            #   uses: actions/setup-node@v3
+            #   with:
+            #       node-version: 18.x
 
-            # Install package.json
-            #
-            - name: npm install
-              run: |
-                  npm install
+            # # Install package.json
+            # #
+            # - name: npm install
+            #   run: |
+            #       npm install
 
-            # Build the app
-            #
-            - name: Publish
-              env:
-                  CSC_IDENTITY_AUTO_DISCOVERY: false
-              run: |
-                  npm run build
+            # # Build the app
+            # #
+            # - name: Publish
+            #   env:
+            #       CSC_IDENTITY_AUTO_DISCOVERY: false
+            #   run: |
+            #       npm run build
+
+            # # Housekeeping - Mac
+            # # Remove everything except any executables
+            # # Rename the 'dist' folder to 'artifacts'
+            # #
+            # - name: Cleanup artifacts
+            #   if: matrix.os != 'windows-latest'
+            #   run: |
+            #       npx rimraf "dist/!(*.exe|*.deb|*.AppImage|*.dmg)"
+            #       mv dist artifacts
+
+            # # Housekeeping - Windows
+            # # Move the .exe file into the artifacts folder
+            # #
+            # - name: Cleanup artifacts Win
+            #   if: matrix.os == 'windows-latest'
+            #   run: |
+            #       mkdir artifacts
+            #       mv dist/*.exe artifacts
 
             # Housekeeping - Mac
             # Remove everything except any executables
@@ -62,8 +81,7 @@ jobs:
             - name: Cleanup artifacts
               if: matrix.os != 'windows-latest'
               run: |
-                  npx rimraf "dist/!(*.exe|*.deb|*.AppImage|*.dmg)"
-                  mv dist artifacts
+                  echo "macos test" > artifacts/macos-file.log
 
             # Housekeeping - Windows
             # Move the .exe file into the artifacts folder
@@ -71,8 +89,7 @@ jobs:
             - name: Cleanup artifacts Win
               if: matrix.os == 'windows-latest'
               run: |
-                  mkdir artifacts
-                  mv dist/*.exe artifacts
+                  echo "windows test" > artifacts/windows-file.log
 
             # Upload the artifacts folder
             # Ready for the 'release' job
