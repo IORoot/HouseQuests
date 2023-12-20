@@ -106,13 +106,11 @@ jobs:
             - uses: actions/download-artifact@master
               id: download
 
-            # # DEBUG with NGROK.
-            # - name: Start SSH session
-            #   uses: luchihoratiu/debug-via-ssh@main
-            #   with:
-            #     NGROK_AUTH_TOKEN: ${{ secrets.NGROK_AUTH_TOKEN }}
-            #     SSH_PASS: ${{ secrets.NGROK_SSH_PASS }}
-            #     NGROK_REGION: eu
+            # DEBUG
+            # SSH ----------------------
+            - name: Setup upterm session
+              uses: lhotari/action-upterm@v1
+            # SSH ----------------------
 
             # Create an artifacts folder
             # move application files into it.
@@ -122,6 +120,7 @@ jobs:
                   sudo apt install rename
                   mkdir artifacts
 
+                  ls -laR
                   mv macos-latest/* artifacts/
 
                   mv windows-latest/* artifacts/
