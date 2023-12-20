@@ -26,53 +26,34 @@ jobs:
             CSC_IDENTITY_AUTO_DISCOVERY: false
 
         steps:
-            # # Checkout private code from private repo
-            # #
-            # - name: Checkout code
-            #   uses: actions/checkout@v3
-            #   with:
-            #       repository: ioroot/HouseQuests-Private
-            #       token: ${{ secrets.PAT }}
+            # Checkout private code from private repo
+            #
+            - name: Checkout code
+              uses: actions/checkout@v3
+              with:
+                  repository: ioroot/HouseQuests-Private
+                  token: ${{ secrets.PAT }}
 
-            # # Install Node v18
-            # #
-            # - name: Use Node.js 18.x
-            #   uses: actions/setup-node@v3
-            #   with:
-            #       node-version: 18.x
+            # Install Node v18
+            #
+            - name: Use Node.js 18.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 18.x
 
-            # # Install package.json
-            # #
-            # - name: npm install
-            #   run: |
-            #       npm install
+            # Install package.json
+            #
+            - name: npm install
+              run: |
+                  npm install
 
-            # # Build the app
-            # #
-            # - name: Publish
-            #   env:
-            #       CSC_IDENTITY_AUTO_DISCOVERY: false
-            #   run: |
-            #       npm run build
-
-            # # Housekeeping - Mac
-            # # Remove everything except any executables
-            # # Rename the 'dist' folder to 'artifacts'
-            # #
-            # - name: Cleanup artifacts
-            #   if: matrix.os != 'windows-latest'
-            #   run: |
-            #       npx rimraf "dist/!(*.exe|*.deb|*.AppImage|*.dmg)"
-            #       mv dist artifacts
-
-            # # Housekeeping - Windows
-            # # Move the .exe file into the artifacts folder
-            # #
-            # - name: Cleanup artifacts Win
-            #   if: matrix.os == 'windows-latest'
-            #   run: |
-            #       mkdir artifacts
-            #       mv dist/*.exe artifacts
+            # Build the app
+            #
+            - name: Publish
+              env:
+                  CSC_IDENTITY_AUTO_DISCOVERY: false
+              run: |
+                  npm run build
 
             # Housekeeping - Mac
             # Remove everything except any executables
@@ -81,8 +62,8 @@ jobs:
             - name: Cleanup artifacts
               if: matrix.os != 'windows-latest'
               run: |
-                  mkdir artifacts
-                  echo "macos test" > artifacts/macos-file.log
+                  npx rimraf "dist/!(*.exe|*.deb|*.AppImage|*.dmg)"
+                  mv dist artifacts
 
             # Housekeeping - Windows
             # Move the .exe file into the artifacts folder
@@ -91,7 +72,19 @@ jobs:
               if: matrix.os == 'windows-latest'
               run: |
                   mkdir artifacts
-                  echo "windows test" > artifacts/windows-file.log
+                  mv dist/*.exe artifacts
+
+            # - name: Cleanup artifacts
+            #   if: matrix.os != 'windows-latest'
+            #   run: |
+            #       mkdir artifacts
+            #       echo "macos test" > artifacts/macos-file.log
+
+            # - name: Cleanup artifacts Win
+            #   if: matrix.os == 'windows-latest'
+            #   run: |
+            #       mkdir artifacts
+            #       echo "windows test" > artifacts/windows-file.log
 
             # Upload the artifacts folder
             # Ready for the 'release' job
@@ -127,11 +120,18 @@ jobs:
                   name: macos-latest
                   path: macos-latest
 
+            # Download the artifact from the previous jobs
+            #
+            - uses: actions/download-artifact@v4.1.0
+              with:
+                  name: windows-latest
+                  path: windows-latest
+
             # # DEBUG
-            # SSH ----------------------
-            - name: Setup upterm session
-              uses: lhotari/action-upterm@v1
-            # SSH ----------------------
+            # # SSH ----------------------
+            # - name: Setup upterm session
+            #   uses: lhotari/action-upterm@v1
+            # # SSH ----------------------
 
             # Create an artifacts folder
             # move application files into it.
