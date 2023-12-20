@@ -90,6 +90,7 @@ jobs:
             - name: Cleanup artifacts Win
               if: matrix.os == 'windows-latest'
               run: |
+                  mkdir artifacts
                   echo "windows test" > artifacts/windows-file.log
 
             # Upload the artifacts folder
