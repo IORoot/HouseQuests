@@ -141,7 +141,6 @@ jobs:
                   sudo apt install rename
                   mkdir artifacts
 
-                  ls -laR
                   mv macos-latest/* artifacts/
 
                   mv windows-latest/* artifacts/
