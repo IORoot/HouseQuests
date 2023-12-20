@@ -97,7 +97,7 @@ jobs:
             # Ready for the 'release' job
             #
             - name: Upload artifacts
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v4.0.0
               with:
                   name: ${{ matrix.os }}
                   path: artifacts
@@ -123,6 +123,9 @@ jobs:
             # Download the artifact from the previous jobs
             #
             - uses: actions/download-artifact@v4.1.0
+              with:
+                  name: macos-latest
+                  path: macos-latest
 
             # # DEBUG
             # SSH ----------------------
