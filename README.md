@@ -24,7 +24,8 @@ When adding an issue, please try to add an appropriate label to categorise it.
 The main wiki and documentation is on the website at [HouseQuests.com/docs](https://HouseQuests.com/docs). You can find decriptions and help for most features of the application there.
 
 
-## Free first
+## Free
 
-Before you subscribe to the HouseQuests application, it's wise to just install the free version first and check that it's working. The subscription will give you a code to unlock the extra features on the same application - which means you won't loose any money if it doesn't work correctly.
+This repository is just a location for all the releases when it was a paid applica†ion. Now everything is free - head over to the private repo here:
+https://github.com/IORoot/HouseQuests-private
 
