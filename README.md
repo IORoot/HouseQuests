@@ -1,4 +1,4 @@
-![header](https://raw.githubusercontent.com/IORoot/HouseQuests/refs/heads/master/header.jpg)
+![header](https://raw.githubusercontent.com/IORoot/HouseQuests/refs/heads/main/header.jpg)
 
 
 ![Last Release](https://github.com/IORoot/HouseQuests/actions/workflows/build_and_release.yaml/badge.svg)
