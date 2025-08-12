@@ -5,9 +5,6 @@
 This is an electron app that boasts the ability to combine results from multiple
 UK housing websites into a single map. See housequests.com for details.
 
-This was a private repo that I had built in an authentication server, but have since
-decided to make it public with the hope of interest from other people.
-
 ## Starting project
 
 ```bash

@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+
+<project>
+HouseQuests is an electron app that boasts the ability to combine results from multiple
+UK housing websites into a single map. See housequests.com for details.
+</project>
