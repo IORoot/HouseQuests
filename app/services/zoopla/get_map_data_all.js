@@ -119,7 +119,18 @@ module.exports = function (app) {
                                         address: listing.address,
                                         description: listing.description,
                                         url: `https://zoopla.co.uk/for-sale/details/${listing.listingId}`,
-                                        source: 'zoopla'
+                                        source: 'zoopla',
+                                        // Additional fields for property details
+                                        title: listing.title,
+                                        detailedDescription: listing.description,
+                                        floorArea: listing.floorArea,
+                                        propertyType: listing.propertyType,
+                                        tenure: listing.tenure,
+                                        features: listing.features || [],
+                                        images: listing.images || [],
+                                        branch: listing.branch,
+                                        published: listing.publishedOn,
+                                        category: listing.category
                                     }));
                                 }
                             } catch (e) {
@@ -256,7 +267,18 @@ module.exports = function (app) {
                                                 address: listing.address,
                                                 description: listing.description,
                                                 url: `https://zoopla.co.uk/for-sale/details/${listing.listingId}`,
-                                                source: 'zoopla'
+                                                source: 'zoopla',
+                                                // Additional fields for property details
+                                                title: listing.title,
+                                                detailedDescription: listing.description,
+                                                floorArea: listing.floorArea,
+                                                propertyType: listing.propertyType,
+                                                tenure: listing.tenure,
+                                                features: listing.features || [],
+                                                images: listing.images || [],
+                                                branch: listing.branch,
+                                                published: listing.publishedOn,
+                                                category: listing.category
                                             }));
                                         }
                                     } catch (e) {

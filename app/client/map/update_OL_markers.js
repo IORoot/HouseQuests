@@ -42,7 +42,9 @@ export function update_OL_markers(markerdata, icon, source){
                 ID: property.id,
                 url: property.url,
                 source: property.source,
-                type: 'property'
+                type: 'property',
+                longitude: property.longitude,
+                latitude: property.latitude
             })
             
             feature.setStyle(

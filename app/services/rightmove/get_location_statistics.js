@@ -13,7 +13,12 @@ module.exports = function(app){
         var postcode = JSON.parse(req.body);
 
         // lowercase and hyphenated
-        postcode.replace(/\s+/g, '-').toLowerCase();
+        if (typeof postcode === 'string') {
+            postcode = postcode.replace(/\s+/g, '-').toLowerCase();
+        } else {
+            // Fallback to safe empty response
+            return res.json({});
+        }
 
         // At instance level ignore SSL cert issues.
         const agent = new https.Agent({  
@@ -39,9 +44,9 @@ module.exports = function(app){
             res.json(data)
         })
         .catch(function (error) {
-            // handle error
             console.log(error);
-            return;
+            // Always respond with valid JSON to avoid client parse errors
+            res.json({});
         })
 
     });

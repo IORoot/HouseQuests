@@ -15,25 +15,33 @@ export function update_neighbourhood(propertyStatistics)
     // currentProperty is a global object
     // console.log(currentProperty)
 
-    const longitude = currentProperty.longitude;
-    const latitude = currentProperty.latitude;
-    const postcode = currentProperty.postcode
-    let propertyPrice = priceToInt(currentProperty.price)
+    const longitude = currentProperty?.longitude;
+    const latitude = currentProperty?.latitude;
+    const postcode = currentProperty?.postcode || ''
+    let propertyPrice = priceToInt(currentProperty?.price)
 
     const neighbourhoodTable = document.getElementById("neighbourhood-results-table")
 
     // Clear results for next property
     neighbourhoodTable.innerHTML=''
 
+    // Safeguard: if no stats, exit quietly to allow drawer to render
+    if (!propertyStatistics || typeof propertyStatistics !== 'object'){
+        return;
+    }
+
+    const mortgageWidgetModel = propertyStatistics.mortgageWidgetModel || {}
+    const resultsBlock = propertyStatistics.results || {}
+
     // ┌─────────────────────────────────────┐
     // │            Average Price            │
     // │          of postcode area           │
     // └─────────────────────────────────────┘
-    if (propertyStatistics.mortgageWidgetModel.currentAverage){
+    if (mortgageWidgetModel.currentAverage){
 
-        var currentAverage = priceToInt(propertyStatistics.mortgageWidgetModel.currentAverage)
+        var currentAverage = priceToInt(mortgageWidgetModel.currentAverage)
         output_neighbourhood_row({
-            'attribute':    propertyStatistics.mortgageWidgetModel.currentAverage,
+            'attribute':    mortgageWidgetModel.currentAverage,
             'icon':         '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17,16H15V22H12V17H8V22H5V16H3L10,10L17,16M6,2L10,6H9V9H7V6H5V9H3V6H2L6,2M18,3L23,8H22V12H19V9H17V12H15.34L14,10.87V8H13L18,3Z"/></svg>',
             'target':       'neighbourhood-results-table',
             'title':        'Overall average property price (of all types) in ' + postcode +' for the last 12 months.',
@@ -45,12 +53,13 @@ export function update_neighbourhood(propertyStatistics)
     // ┌─────────────────────────────────────┐
     // │      Percent change in prices       │
     // └─────────────────────────────────────┘
-    if (propertyStatistics.mortgageWidgetModel.percentageChange){
+    if (mortgageWidgetModel.percentageChange && mortgageWidgetModel.currentAverage){
 
-        var currentValue = priceToInt(propertyStatistics.mortgageWidgetModel.percentageChange.replace('%',''))
+        var currentValue = priceToInt(mortgageWidgetModel.percentageChange.replace('%',''))
+        var currentAverage = priceToInt(mortgageWidgetModel.currentAverage)
         var pricechange = (currentAverage * ( currentValue / 100 ))
         output_neighbourhood_row({
-            'attribute':    propertyStatistics.mortgageWidgetModel.percentageChange + ' (£'+pricechange.toFixed(0) + ')',
+            'attribute':    mortgageWidgetModel.percentageChange + ' (£'+pricechange.toFixed(0) + ')',
             'icon':         '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M5,6H23V18H5V6M14,9A3,3 0 0,1 17,12A3,3 0 0,1 14,15A3,3 0 0,1 11,12A3,3 0 0,1 14,9M9,8A2,2 0 0,1 7,10V14A2,2 0 0,1 9,16H19A2,2 0 0,1 21,14V10A2,2 0 0,1 19,8H9M1,10H3V20H19V22H1V10Z"/></svg>',
             'target':       'neighbourhood-results-table',
             'title':        'Average property price change (of all types) for ' + postcode +' in the last 12 months.',
@@ -63,9 +72,9 @@ export function update_neighbourhood(propertyStatistics)
     // │      Number of properties with      │
     // │            sale history             │
     // └─────────────────────────────────────┘
-    if (propertyStatistics.results.resultCount){
+    if (resultsBlock.resultCount){
 
-        let resultCount_removedComma = propertyStatistics.results.resultCount.replace(',','')
+        let resultCount_removedComma = resultsBlock.resultCount.replace(',','')
         let resultCount = Number(resultCount_removedComma)
         output_neighbourhood_row({
             'attribute':    resultCount,
@@ -75,7 +84,6 @@ export function update_neighbourhood(propertyStatistics)
             'guide':        '(Lower is better)',
         })
     }
-
 }
 
 

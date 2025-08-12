@@ -7,48 +7,52 @@ import { inspector_check } from '../text_inspector/inspector_check.js'
 
 export function update_drawer_contents(propertyDetails, source)
 {
-    
-    const property = JSON.parse(propertyDetails);
-    
+    // Accept either JSON string or already-parsed object
+    const property = (typeof propertyDetails === 'string') ? JSON.parse(propertyDetails) : propertyDetails;
+
     // Update global variable.
-    currentProperty = property;
+    currentProperty = property || {};
 
     // Set Source
-    document.getElementById("drawer-source").innerHTML = source;
-    document.getElementById("drawer-source").dataset.source = source;
+    document.getElementById("drawer-source").innerHTML = source || '';
+    document.getElementById("drawer-source").dataset.source = source || '';
 
     // Set ID
-    document.getElementById("drawer-id").innerHTML = property.id;
-    document.getElementById("drawer-id").dataset.id = property.id;
+    document.getElementById("drawer-id").innerHTML = property.id ?? '';
+    document.getElementById("drawer-id").dataset.id = property.id ?? '';
 
     // Set Longitude
-    document.getElementById("drawer-longitude").innerHTML = "Longitude: "+property.longitude;
-    document.getElementById("drawer-longitude").dataset.longitude = property.longitude;
+    document.getElementById("drawer-longitude").innerHTML = "Longitude: "+ (property.longitude ?? '');
+    document.getElementById("drawer-longitude").dataset.longitude = property.longitude ?? '';
 
     // Set Latitude
-    document.getElementById("drawer-latitude").innerHTML = "Latitude: "+property.latitude;
-    document.getElementById("drawer-latitude").dataset.latitude = property.latitude;
+    document.getElementById("drawer-latitude").innerHTML = "Latitude: "+ (property.latitude ?? '');
+    document.getElementById("drawer-latitude").dataset.latitude = property.latitude ?? '';
 
     // Set Title
-    document.getElementById("drawer-title").innerHTML = property.title;
+    document.getElementById("drawer-title").innerHTML = property.title ?? '';
 
     // Set Price
-    document.getElementById("drawer-price").innerHTML = property.price;
+    document.getElementById("drawer-price").innerHTML = property.price ?? '';
 
     // Set Bedrooms
-    document.getElementById("drawer-bedrooms").innerHTML = property.bedrooms + " Bedrooms";
+    document.getElementById("drawer-bedrooms").innerHTML = (property.bedrooms ?? '') + (property.bedrooms ? " Bedrooms" : '');
 
     // Set Tenure
-    document.getElementById("drawer-tenure").innerHTML = property.tenure;
+    document.getElementById("drawer-tenure").innerHTML = property.tenure ?? '';
     
-    // Set Station
-    document.getElementById("drawer-station").innerHTML = property.station;
+    // Set Station (may be undefined for many sources)
+    document.getElementById("drawer-station").innerHTML = property.station ?? '';
 
     // Set Images
-    const images = property.images;
-    var grid = "";
+    const images = Array.isArray(property.images) ? property.images : [];
+    let grid = "";
     images.forEach(image => {
-        grid += '<a class="w-full h-30 bg-gray-200" href="'+ image.url +'" target="_blank"><img src="'+ image.thumbnail +'" /></a>'
+        const url = image.url || '';
+        const thumb = image.thumbnail || image.url || '';
+        if (url && thumb){
+            grid += '<a class="w-full h-30 bg-gray-200" href="'+ url +'" target="_blank"><img src="'+ thumb +'" /></a>'
+        }
     });
     document.getElementById("drawer-image-grid").innerHTML = grid;
 
@@ -63,11 +67,9 @@ export function update_drawer_contents(propertyDetails, source)
     document.getElementById("drawer-inspector-words").innerHTML = ''
 
     // Set Text
-    document.getElementById("drawer-contents").innerHTML = inspector_check(property.description);
+    document.getElementById("drawer-contents").innerHTML = inspector_check(property.description ?? '');
 
     // Set URL
-    document.getElementById("drawer-link").href = property.link;
-    document.getElementById("drawer-link-text").innerHTML = source;
-
-
+    document.getElementById("drawer-link").href = property.link ?? '#';
+    document.getElementById("drawer-link-text").innerHTML = source || '';
 }
