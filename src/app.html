@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>HouseQuests</title>
+        <link rel="stylesheet" href="./lib/flowbite/flowbite.min.css" />
+        <link rel="stylesheet" href="./lib/v6.15.1-dist/ol.css" type="text/css">
+        <link rel="stylesheet" type="text/css" href="./views/style.css" />
+        
+        <script src="./lib/v6.15.1-dist/ol.js"></script>
+        <script src="./lib/ol-ext/ol-ext.min.js"></script>
+
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+        <meta name="hand-generated html (primitive, aint it?)">
+
+    </head>
+    <body>
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │            Main Button              │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/main_button.html')}
+
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │            Map Component            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/map.html')}
+
+
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │             Drawer Left             │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/drawer_left.html')}
+
+
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │            Drawer Right             │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/drawer_right.html')}
+
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │       Popup for map items           │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/popup_map_items.html')}
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │        General Alert Modal          │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_general_alert.html')}
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │           Change Colours            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_change_colours.html')}
+
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │      Delete all Coloured Icons      │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_delete_icons.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │          Import Data File           │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_import_data_file.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │        Import Colour Palette        │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_import_colour_palette.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │            Save Searches            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_save_searches.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │           Overwrite Save            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_overwrite_message.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │             Intro Modal             │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_intro.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │           Intro Tutorial            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_tutorial.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │                Popup                │
+        │             Advert Modal            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/modal_advert.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │          Loading Spinner            │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/loading_spinner.html')}
+
+
+        <!--         
+        ┌─────────────────────────────────────┐
+        │          Measurement Tool           │
+        └─────────────────────────────────────┘
+        -->
+        ${require('./client/partials/measurement_tool.html')}
+
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │            UI Components            │
+        └─────────────────────────────────────┘    
+        -->
+        <script src="./lib/flowbite/flowbite.min.js"></script>
+
+        <!-- 
+        ┌─────────────────────────────────────┐
+        │              Main App               │
+        └─────────────────────────────────────┘  
+        -->
+        <script src="./client/initialise/initialise.js"></script>
+        <script src="app.js" type="module" ></script>
+        <script src="./client/measurement_tool/measurement_tool.js" type="module"></script>
+        <script src='./express.js'></script>
+        
+    </body>
+</html>

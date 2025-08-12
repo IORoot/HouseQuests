@@ -1,34 +1,160 @@
-![header](https://raw.githubusercontent.com/IORoot/HouseQuests/refs/heads/main/header.jpg)
+![header](https://raw.githubusercontent.com/IORoot/HouseQuests-Private/refs/heads/master/header.jpg)
+
+# HouseQuests
+
+This is an electron app that boasts the ability to combine results from multiple
+UK housing websites into a single map. See housequests.com for details.
+
+This was a private repo that I had built in an authentication server, but have since
+decided to make it public with the hope of interest from other people.
+
+## Starting project
+
+```bash
+npm run start
+```
+
+##  Release Management
+
+To create a new release of the HouseQuests electron app, you can run:
+```bash
+npm run release
+# or
+npm run build
+```
+This will place all new distribution files into the `./dist` folder.
+
+Secret scanning enabled on repo.
 
 
-![Last Release](https://github.com/IORoot/HouseQuests/actions/workflows/build_and_release.yaml/badge.svg)
+###  Publish release on github 
+
+There is an adjacent github repo that just hosts the releases. This is at: https://github.com/IORoot/HouseQuests
+
+1. Give a version release tag to the local repo.
+
+```bash
+git tag v0.1.15      # Add a tag to current branch
+```
+
+Other commands:
+```bash
+git tag            					# List all tags on current branch
+git tag -d <NAME>   				# Delete tag
+git push origin :refs/tags/v0.1.16	# Delete tag on github (delete local first)
+```
+
+2. Push the tags to GitHub
+
+```bash
+git push --tags
+```
+
+The automated GitHub action will build the windows and mac distributable files and add them to the 'releases' page.
+
+Note that a release will **NOT** run the tests before releasing.
 
 
-# HouseQuests Application
 
-This is the official public repository for the HouseQuests Application. 
+## Apple Quarantine
 
-You can browse and download prior releases of the application as well as submit issues or enhancement suggestions.
+Apple says the file is damaged and cannot be open it's because it has been quarantined it. 
 
-## Reality of the project
+Run the following command:
 
-Housequests is a small little side-project that I wanted to make available to the public for a small fee. As much as I'd want to support and bug-fix this application, Its not feasible for me to be able to commit to that. So this github repo is for people to communicate through the issues page and help each other solve any problems. I'll comment when I can. 
+```
+xattr -d com.apple.quarantine /Applications/HouseQuests.app
+```
+
+## 5. Folders
+
+```bash
+#main application
+/app
+	/client 		# main electron app
+	/lib			# bundled libraries and files
+	/maps			# bundled maps
+	/services		# node server backend
+
+# webpack-build config files
+/build
+
+# npm environment config
+/config
+
+# production-ready distribution files
+/dist
+
+# icons and install images
+/resources
+
+# HTML and electron files. Builds into /app folder.
+/src
+
+# Mocha Tests
+/tests
+
+```
+
+## 5. Making MacOS Icons
+
+https://gist.github.com/jamieweavis/b4c394607641e1280d447deed5fc85fc
+
+## 6. MacOS Code-signing.
+
+Disable code-signing by setting the environment variable before creating the app.
+```
+export CSC_IDENTITY_AUTO_DISCOVERY=false
+```
+
+https://disable-gatekeeper.github.io/
+
+## 7. Testing
+
+The WebdriveIO / Mocha tests NEED the `/dist` release to run against.
+Make sure you have done an `npm run release` to build the release before testing.
+
+Also, set the environment variable 'HQ_TEST=test' to disable the 10-second advert
 
 
-## Issues
+## 8. Tailwind
 
-Sign up for a github account and submit your issues through the 'issues' tab (see above) on this page. 
+To create a new`./app/views/style.css` file, you'll need to run TailWind.
 
-When adding an issue, please try to add an appropriate label to categorise it.
+```
+npx tailwindcss -i ./src/views/style.css -o ./app/views/style.css --watch
+```
+
+To build it for production:
+
+```
+npx tailwindcss -i ./src/views/style.css -o ./app/views/style.css --minify
+```
 
 
-## Wiki
+## 9. VSCode debugging
 
-The main wiki and documentation is on the website at [HouseQuests.com/docs](https://HouseQuests.com/docs). You can find decriptions and help for most features of the application there.
+.vscode/launch.json in vscode:
 
-
-## Free
-
-This repository is just a location for all the releases when it was a paid applica†ion. Now everything is free - head over to the private repo here:
-https://github.com/IORoot/HouseQuests-private
-
+```
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program",
+            "cwd": "${workspaceFolder}/HouseQuests-Private",
+            "runtimeExecutable": "${workspaceFolder}/HouseQuests-Private/node_modules/.bin/electron",
+            "windows": {
+                "runtimeExecutable": "${workspaceFolder}/HouseQuests-Private/node_modules/.bin/electron.cmd"
+            },
+            "args" : ["."],
+            "outputCapture": "std"
+        }
+    ]
+}
+```

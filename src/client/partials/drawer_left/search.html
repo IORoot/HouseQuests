@@ -1,0 +1,51 @@
+<div id="settingsTabContent">
+    <div class="hidden" id="searchTabContent" role="tabpanel" aria-labelledby="search-tab">
+
+        <div class="flex flex-col gap-4">
+
+            <div class="flex flex-col gap-2 mt-4">
+                <h5 class="inline-flex items-center text-sm font-semibold text-emerald-900 capitalize">Site Searches</h5>
+                <p class="text-xs text-gray-500 mb-4">Retrieve markers from property sites.</p>
+            </div>
+
+
+            <div class="flex flex-col gap-2">
+
+                <div class="font-light flex flex-row gap-4">
+                    <div class="flex flex-col gap-8 w-full">
+
+                        <!-- Zoopla  -->
+                        ${require('./search/search_zoopla.html')}
+
+                        <!-- Rightmove  -->
+                        ${require('./search/search_rightmove.html')}
+
+                        <!-- OnTheMarket  -->
+                        ${require('./search/search_onthemarket.html')}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="flex flex-row gap-2 flex-wrap">
+                
+                <button id="refresh-page" type="button" class="w-1/2 md:w-1/4 lg:1/6 fill-white text-white bg-emerald-900 hover:bg-orange-300 hover:text-orange-700 hover:fill-orange-700 font-regular rounded-lg text-sm p-3 text-center mb-2 flex flex-col gap-1">
+                    <svg class="w-6 h-6 m-auto" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/></svg>
+                    <span class="m-auto">Refresh Page</span>
+                </button>
+                
+                <div class="flex flex-col gap-1 bg-orange-100 rounded-xl mb-2 ml-auto px-8">
+                    <div class="m-auto text-emerald-900">
+                        <div>Total Markers</div>
+                        <div id="totalMarkerCount" class="text-center text-emerald-700"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
