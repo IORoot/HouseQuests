@@ -1,7 +1,7 @@
 {
 	"name": "ioroot-advanced-property-search",
 	"productName": "HouseQuests",
-	"description": "Now using puppeteer for zoopla scraping.",
+	"description": "Now using puppeteer with bundled Chromium for zoopla scraping.",
 	"release_notes": [
 		"- Now using puppeteer for zoopla scraping."
 	],
@@ -92,6 +92,7 @@
 		"mixpanel-browser": "^2.45.0",
 		"node-fetch": "^3.3.2",
 		"node-json-transform": "^1.1.2",
+		"puppeteer": "^24.16.1",
 		"puppeteer-core": "^22.6.4",
 		"puppeteer-in-electron": "^3.0.5",
 		"tough-cookie": "^4.1.3",
