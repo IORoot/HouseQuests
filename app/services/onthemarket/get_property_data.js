@@ -5,7 +5,7 @@ module.exports = function(app){
     var { transform } = require("node-json-transform");
 
     // ┌─────────────────────────────────────┐
-    // │          RIGHTMOVE PROPERTY         │
+    // │         ONTHEMARKET PROPERTY        │
     // └─────────────────────────────────────┘
     app.post('/onthemarketProperty', (req, res) => {
 
@@ -20,47 +20,57 @@ module.exports = function(app){
         axios({
             method: 'get',
             url: target,
-            // headers:{ 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.63 Safari/537.36' },
             httpsAgent: agent
         })
         .then(function (response) {
 
-            var scriptdata = response.data
-            scriptdata = scriptdata.replace(/[\s\S]*__OTM__\.jsonData = /, '');
-            scriptdata = scriptdata.replace(/__OTM__\.globals =[\s\S]*/, '');
-            scriptdata = scriptdata.replace(/};/, '}');
+            let html = response.data;
 
-            data = JSON.parse(scriptdata);
+            // Extract __NEXT_DATA__ script tag content
+            const nextDataMatch = html.match(/<script id="__NEXT_DATA__"[^>]*>(.*?)<\/script>/s);
+            if (!nextDataMatch) {
+                throw new Error('__NEXT_DATA__ script not found');
+            }
+
+            let data = JSON.parse(nextDataMatch[1]);
+            
+            // Navigate to the property data in the nested structure
+            if (!data.props || !data.props.initialReduxState || !data.props.initialReduxState.property) {
+                throw new Error('Property data not found in __NEXT_DATA__');
+            }
+
+            data = data.props.initialReduxState.property;
 
             var map = {
                 item: {
                     id:             "id",
                     description:    "description",
-                    title:          "page-titles.page-title",
+                    title:          "propertyTitle",
                     price:          "price",
-                    floorplan:      "floorplans[0].large-url",
+                    floorplan:      "floorplans[0].largeUrl",
                     longitude:      "location.lon",
                     latitude:       "location.lat",
-                    bedrooms:       "bedrooms-text",
-                    tenure:         "unknown",
-                    link:           "canonical-url",
+                    bedrooms:       "bedrooms",
+                    tenure:         "keyInfo[0].value",
+                    link:           "canonicalUrl",
                     details:        {
-                        area:               "minimum-area",
+                        area:               "minimumArea",
                         branch:             "agent.name",
-                        branchID:           "agent.branch_id",
-                        branchLogo:         "agent.logo-path",
-                        branchURL:          "agent.website-url",
-                        broadband:          "broadband",
-                        dataLayer:          "header-data.data-layer",
+                        branchID:           "agent.branchId",
+                        branchLogo:         "agent.logoUrl",
+                        branchURL:          "agent.websiteUrl",
+                        broadband:          "broadband.broadbandType",
+                        dataLayer:          "headerData.dataLayer",
                         epcRating:          "epc.rating",
                         featuresArray:      "features",
-                        newHome:            "new-home-flag",
+                        newHome:            "newHomeFlag",
                         numberBaths:        "bathrooms",
                         numberBeds:         "bedrooms",
-                        propertyType:       "prop-sub-id",
+                        propertyType:       "humanisedPropertyType",
                         schools:            "school",
-                        mobileReception:    "mobile-reception",
+                        mobileReception:    "mobileReception",
                         trainStations:      "station",
+                        councilTaxBand:     "keyInfo[1].value"
                     }
                 },
 
@@ -68,10 +78,17 @@ module.exports = function(app){
                     item.source = "onthemarket";
                     item.url = "https://www.onthemarket.com/details/"+item.id
 
-                    if (item.details.dataLayer){
-                        let dataLayer = JSON.parse(item.details.dataLayer)
-                        item.postcode = dataLayer.postcode
+                    // Extract postcode from dataLayer if available
+                    if (item.details && item.details.dataLayer){
+                        try {
+                            let dataLayer = JSON.parse(item.details.dataLayer)
+                            item.postcode = dataLayer.postcode
+                        } catch (_) {}
                     }
+                    
+                    // Inject coordinates from marker if missing
+                    if (item.longitude == null && marker.longitude != null){ item.longitude = marker.longitude; }
+                    if (item.latitude == null && marker.latitude != null){ item.latitude = marker.latitude; }
                     
                     return item; 
                 }
@@ -79,83 +96,88 @@ module.exports = function(app){
         
             var result = transform(data, map);
             
-            // IMAGES
-            // Convert Images array to a standard list of URLs. 
-            // [ 'url': 'www', 'url': 'www', ...]
+            // IMAGES (hardened)
             var imageArray = []
-            data.images.forEach(function(image, index) {
-                imageArray.push({ 
-                    'url': image["large-url"],
-                    'thumbnail': image.prefix + '-' + image.geometries.ls.suffix + '.' + image.ext
+            if (Array.isArray(data.images)){
+                data.images.forEach(function(image) {
+                    if (!image) return;
+                    const url = image.largeUrl || image.url || '';
+                    if (url){
+                        imageArray.push({ url, thumbnail: url }); // Use largeUrl for both to show normal images
+                    }
                 });
-            });
+            }
             result['images'] = imageArray;
 
             // Closest Station
-            result['station'] = data.station[0].name + '(' + data.station[0]["display-distance"] + ' )'
+            if (data.station && Array.isArray(data.station) && data.station[0]){
+                result['station'] = data.station[0].name + ' (' + data.station[0].displayDistance + ')'
+            }
 
             // Train stations
-            if (result.details.trainStations){
+            if (result.details && Array.isArray(result.details.trainStations)){
                 result.details.trainStations.forEach(function(oldStation, index){
 
                     let lines = ''
-                    oldStation['all-networks'].forEach(function(line){
-                        lines += line.type + ', '
-                    })
+                    if (Array.isArray(oldStation.allNetworks)){
+                        oldStation.allNetworks.forEach(function(line){
+                            lines += line.type + ', '
+                        })
+                    }
 
                     result.details.trainStations[index] = {
-                        'name': oldStation['full-name'],
+                        'name': oldStation.fullName || oldStation.name,
                         'type': lines,
-                        'distance': oldStation['display-distance'] 
+                        'distance': oldStation.displayDistance 
                     }
                 });
             }
 
             // schools
-            if (result.details.schools){
+            if (result.details && Array.isArray(result.details.schools)){
                 result.details.schools.forEach(function(oldSchool, index){
 
                     let report = 'N/A'
-                    if (oldSchool['report-descriptive']){
-                        report = oldSchool['report-descriptive']
+                    if (oldSchool.reportDescriptive){
+                        report = oldSchool.reportDescriptive
                     }
                     
                     result.details.schools[index] = {
-                        'name': oldSchool['name'],
-                        'distance': oldSchool['display-distance'],
+                        'name': oldSchool.name,
+                        'distance': oldSchool.displayDistance,
                         'report': report
                     }
                 })
             }
 
-            // Loop through key-items
-            data['key-info'].forEach(function(infoItem){
-                
-                if(infoItem.title.toLowerCase() == 'tenure'){
-                    result.tenure = infoItem.value
-                }                
-
-                if(infoItem.title.toLowerCase() == 'council tax'){
-                    result.details.councilTaxBand = infoItem.value
-                }
-
-                if(infoItem.title.toLowerCase() == 'broadband'){
-                    result.details.broadband = infoItem.value
-                }
-            })
+            // Loop through key-info items for additional details
+            if (Array.isArray(data.keyInfo)){
+                data.keyInfo.forEach(function(infoItem){
+                    const title = (infoItem.title || '').toLowerCase();
+                    if(title === 'tenure'){
+                        result.tenure = infoItem.value
+                    }                
+                    if(title === 'council tax'){
+                        if (!result.details) result.details = {};
+                        result.details.councilTaxBand = infoItem.value
+                    }
+                    if(title === 'broadband'){
+                        if (!result.details) result.details = {};
+                        result.details.broadband = infoItem.value
+                    }
+                })
+            }
 
             // Make features an Array of strings.
-            result.details.featuresArray.forEach(function(item, index){
-                result.details.featuresArray[index] = item.feature
-            })
-
+            if (result.details && Array.isArray(result.details.featuresArray)){
+                result.details.featuresArray = result.details.featuresArray.map(item => item && item.feature ? item.feature : item).filter(Boolean)
+            }
 
             res.json(result)
         })
         .catch(function (error) {
-            // handle error
-            console.log(error);
-            return;
+            // Always respond JSON so client doesn't crash
+            res.json({});
         })
 
     });

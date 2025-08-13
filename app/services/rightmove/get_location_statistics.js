@@ -44,7 +44,6 @@ module.exports = function(app){
             res.json(data)
         })
         .catch(function (error) {
-            console.log(error);
             // Always respond with valid JSON to avoid client parse errors
             res.json({});
         })

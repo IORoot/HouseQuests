@@ -4,9 +4,7 @@ module.exports = function (app) {
 
     app.post('/zooplaAllMap', async (req, res) => {
         try {
-            console.log('=== ZOOPLA ALL MAP REQUEST STARTED ===');
             const target = req.body;
-            console.log('Target URL:', target);
 
             if (!target) {
                 res.status(400).send('No target URL provided');
@@ -34,7 +32,7 @@ module.exports = function (app) {
 
             // Get url parts
             const addressParts = url.parse(target, true);
-            console.log('addressParts.path: ' + addressParts.path);
+            
 
             // Set total count and pagination
             totalCount = 500; // Default total count
@@ -42,7 +40,6 @@ module.exports = function (app) {
 
             // Scrape properties using Puppeteer - just page 1
             for (let pageNum = 1; pageNum <= pagination; pageNum++) {
-                console.log(`=== STARTING PAGE ${pageNum} ===`);
                 const pageUrl = `${target}&pn=${pageNum}`;
                 
                 try {
@@ -82,22 +79,10 @@ module.exports = function (app) {
                     await new Promise(resolve => setTimeout(resolve, 3000)); // Increased wait time
                     
                     // Debug: Take a screenshot and log page info
-                    await page.screenshot({ path: `debug_page_${pageNum}.png` });
-                    console.log(`Page ${pageNum} loaded:`, pageUrl);
-                    console.log(`Page title:`, await page.title());
+                    
                     
                     // Log some page content for debugging
-                    const pageContent = await page.evaluate(() => {
-                        return {
-                            title: document.title,
-                            bodyText: document.body.textContent.substring(0, 500),
-                            links: Array.from(document.querySelectorAll('a')).slice(0, 10).map(a => ({
-                                href: a.href,
-                                text: a.textContent.substring(0, 100)
-                            }))
-                        };
-                    });
-                    console.log('Page content sample:', pageContent);
+                    
                     
                     // Extract property data from the page
                     const properties = await page.evaluate(() => {
@@ -108,7 +93,7 @@ module.exports = function (app) {
                                 const jsonData = JSON.parse(scriptElement.textContent);
                                 if (jsonData.props && jsonData.props.pageProps && jsonData.props.pageProps.listings) {
                                     const listings = jsonData.props.pageProps.listings;
-                                    console.log('Found __NEXT_DATA__ with', listings.length, 'listings');
+                                    
                                     
                                     return listings.map(listing => ({
                                         id: parseInt(listing.listingId),
@@ -134,12 +119,12 @@ module.exports = function (app) {
                                     }));
                                 }
                             } catch (e) {
-                                console.log('Error parsing __NEXT_DATA__:', e.message);
+                                
                             }
                         }
                         
                         // Fallback to DOM scraping if __NEXT_DATA__ not available
-                        console.log('Falling back to DOM scraping...');
+                        
                         const propertyCards = document.querySelectorAll('a[href*="/for-sale/details/"]');
                         const results = [];
                         
@@ -181,7 +166,7 @@ module.exports = function (app) {
                                     });
                                 }
                                 
-                                console.log(`Found property: ${price} - ${beds} - ${address}`);
+                                
                                 
                                 results.push({
                                     id: propertyId,
@@ -197,20 +182,16 @@ module.exports = function (app) {
                                     longitude: null,
                                     latitude: null
                                 });
-                            } else {
-                                console.log(`Skipping card ${index} - missing price or beds elements`);
-                                console.log('Price element:', priceElement);
-                                console.log('Beds element:', bedsElement);
-                            }
+                            } 
                         });
                         
-                        console.log('Total properties found:', results.length);
+                        
                         return results;
                     });
                     
                     // Filter out properties without coordinates (map needs them)
                     const validProperties = properties.filter(prop => prop.longitude && prop.latitude);
-                    console.log(`Page ${pageNum}: Found ${properties.length} total properties, ${validProperties.length} with coordinates`);
+                    
                     
                     totalResults = totalResults.concat(validProperties);
                     
@@ -219,15 +200,14 @@ module.exports = function (app) {
                     // Add delay between requests to avoid rate limiting
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     
-                    console.log(`Scraped page ${pageNum}, found ${properties.length} properties`);
-                    console.log(`=== FINISHED PAGE ${pageNum} ===`);
+                    
                     
                 } catch (error) {
-                    console.log(`Error scraping page ${pageNum}: ${error.message}`);
+                    
                     
                     // If it's a timeout, try one more time with longer wait
                     if (error.message.includes('timeout') || error.message.includes('exceeded')) {
-                        console.log(`Retrying page ${pageNum} with longer timeout...`);
+                        
                         try {
                             await page.close();
                             const retryPage = await browser.newPage();
@@ -256,7 +236,7 @@ module.exports = function (app) {
                                         const jsonData = JSON.parse(scriptElement.textContent);
                                         if (jsonData.props && jsonData.props.pageProps && jsonData.props.pageProps.listings) {
                                             const listings = jsonData.props.pageProps.listings;
-                                            console.log('Retry: Found __NEXT_DATA__ with', listings.length, 'listings');
+                                                
                                             
                                             return listings.map(listing => ({
                                                 id: parseInt(listing.listingId),
@@ -282,7 +262,7 @@ module.exports = function (app) {
                                             }));
                                         }
                                     } catch (e) {
-                                        console.log('Retry: Error parsing __NEXT_DATA__:', e.message);
+                                        
                                     }
                                 }
                                 
@@ -346,15 +326,14 @@ module.exports = function (app) {
                             
                             // Filter retry properties for valid coordinates
                             const validRetryProperties = retryProperties.filter(prop => prop.longitude && prop.latitude);
-                            console.log(`Retry successful for page ${pageNum}: Found ${retryProperties.length} total properties, ${validRetryProperties.length} with coordinates`);
                             
                             totalResults = totalResults.concat(validRetryProperties);
-                            console.log(`Retry successful for page ${pageNum}, found ${retryProperties.length} properties`);
+                            
                             
                             await retryPage.close();
                             
                         } catch (retryError) {
-                            console.log(`Retry failed for page ${pageNum}: ${retryError.message}`);
+                            
                         }
                     }
                     
@@ -363,23 +342,13 @@ module.exports = function (app) {
                 }
             }
 
-            console.log('=== SCRAPING LOOP COMPLETED ===');
-            console.log('About to close browser...');
-            console.log('totalResults before processing:', totalResults.length);
-            console.log('totalResults type:', typeof totalResults);
-            console.log('totalResults is array:', Array.isArray(totalResults));
+            
 
             // Cleanup Puppeteer
             await browser.close();
-            console.log('Browser closed successfully');
+            
 
-            console.log('=== FINAL RESULTS ===');
-            console.log('Total properties found:', totalResults.length);
-            if (totalResults.length > 0) {
-                console.log('Sample property structure:', JSON.stringify(totalResults[0], null, 2));
-                console.log('All property IDs:', totalResults.map(p => p.id).slice(0, 10));
-                console.log('All property coordinates:', totalResults.map(p => ({id: p.id, lng: p.longitude, lat: p.latitude})).slice(0, 5));
-            }
+            
 
             // Ensure we're sending valid data
             if (!Array.isArray(totalResults)) {
@@ -388,11 +357,10 @@ module.exports = function (app) {
                 return;
             }
 
-            console.log('Sending response with', totalResults.length, 'properties');
             res.send(totalResults);
             
         } catch (error) {
-            console.log('Error in get_map_data_all:', error);
+            
             res.status(500).send('Internal server error');
         }
     });

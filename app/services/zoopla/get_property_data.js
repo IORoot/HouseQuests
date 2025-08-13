@@ -10,8 +10,7 @@ module.exports = function(app){
         var target = marker.url;
         var { transform } = require("node-json-transform");
 
-        // Debug: Log the complete marker object
-        console.log('Complete marker object received:', JSON.stringify(marker, null, 2));
+        
 
         // Setup Puppeteer with bundled Chromium
         const puppeteer = require('puppeteer');
@@ -77,28 +76,23 @@ module.exports = function(app){
                         try {
                             const jsonDataString = scriptElement.textContent;
                             return JSON.parse(jsonDataString);
-                        } catch (e) {
-                            console.log('Error parsing __NEXT_DATA__:', e.message);
-                        }
+                        } catch (e) {}
                     }
                     
                     // Look for other script tags with property data
                     const allScripts = document.querySelectorAll('script');
-                    console.log('Available script tags:', Array.from(allScripts).map(s => ({ id: s.id, src: s.src, type: s.type })));
                     
                     // Look for JSON-LD structured data
                     const jsonLdScripts = document.querySelectorAll('script[type="application/ld+json"]');
                     if (jsonLdScripts.length > 0) {
-                        console.log('Found JSON-LD scripts:', jsonLdScripts.length);
                         for (let script of jsonLdScripts) {
                             try {
                                 const jsonLdData = JSON.parse(script.textContent);
-                                console.log('JSON-LD data:', jsonLdData);
                                 if (jsonLdData['@type'] === 'Product' || jsonLdData['@type'] === 'House') {
                                     return { props: { pageProps: { listingDetails: jsonLdData } } };
                                 }
                             } catch (e) {
-                                console.log('Error parsing JSON-LD:', e.message);
+                                
                             }
                         }
                     }
@@ -108,7 +102,6 @@ module.exports = function(app){
                         if (script.textContent && (script.textContent.includes('property') || script.textContent.includes('listing') || script.textContent.includes('zoopla'))) {
                             try {
                                 const scriptData = JSON.parse(script.textContent);
-                                console.log('Found script with property data:', scriptData);
                                 if (scriptData.property || scriptData.listing || scriptData.zoopla) {
                                     return { props: { pageProps: { listingDetails: scriptData } } };
                                 }
@@ -120,11 +113,9 @@ module.exports = function(app){
                     
                     // Look for window variables that might contain property data
                     if (window.propertyData || window.listingData || window.zooplaData) {
-                        console.log('Found window property data:', window.propertyData || window.listingData || window.zooplaData);
                         return { props: { pageProps: { listingDetails: window.propertyData || window.listingData || window.zooplaData } } };
                     }
                     
-                    console.log('No reliable data source found, falling back to HTML scraping');
                     
                     // Fallback to HTML scraping (less reliable)
                     const propertyData = {
@@ -247,14 +238,11 @@ module.exports = function(app){
                     const urlParts = window.location.pathname.split('/');
                     propertyData.listingId = urlParts[urlParts.length - 2] || '';
                     
-                    console.log('Extracted property data:', propertyData);
                     
                     return { props: { pageProps: { listingDetails: propertyData } } };
                 });
         
-                // Uncomment to output the incoming data.
-                console.log('JSON data from Zoopla:', jsonData);
-                console.log('Original marker coordinates:', { longitude: marker.longitude, latitude: marker.latitude });
+                
                 
                 if (!jsonData || !jsonData.props || !jsonData.props.pageProps || !jsonData.props.pageProps.listingDetails) {
                     throw new Error('Required property data not found in __NEXT_DATA__ script tag');
@@ -340,11 +328,8 @@ module.exports = function(app){
                 // Convert Images array to a standard list of URLs. 
                 // [ 'url': 'www', 'url': 'www', ...]
                 var imageArray = []
-                console.log('Property image data:', data.propertyImage);
-                
                 if (data.propertyImage && Array.isArray(data.propertyImage)) {
                     data.propertyImage.forEach(function(image, index) {
-                        console.log('Processing image', index, ':', image);
                         if (image) {
                             // If we already have absolute url from scraping, accept it
                             if (image.url) {
@@ -362,7 +347,7 @@ module.exports = function(app){
                     });
                 }
                 result['images'] = imageArray;
-                console.log('Final image array:', imageArray);
+                
 
                 // Train stations & Schools
                 result.details.schools = []

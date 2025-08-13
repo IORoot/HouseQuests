@@ -8,6 +8,7 @@ import { check_onthemarket_input } from '../sanitiser/check_onthemarket_input.js
 
 export async function request_markers(currentURL, source, endpoint) {
 
+    show_spinner()
 
     // ╭──────────────────────────────────────────────────────────╮
     // │ Sanitize URLs and do some tests on them                  │
@@ -48,4 +49,6 @@ export async function request_markers(currentURL, source, endpoint) {
     set_searches(currentURL, source)
 
     update_search_counts(source, markers.length)
+
+    hide_spinner()
 }

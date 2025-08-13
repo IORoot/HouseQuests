@@ -37,8 +37,7 @@ module.exports = function(app){
                     }
                 });
         
-                // Uncomment to output the incoming data.
-                console.log('JSON data from Zoopla:', jsonData);
+                
 
                 var properties = jsonData.props.pageProps.listings;
         
